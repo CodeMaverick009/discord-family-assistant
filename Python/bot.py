@@ -7,6 +7,7 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
+from recipe_embed import create_recipe_embed
 from maps import extract_place_name
 from maps import scrape_google_maps
 from storage import save_item, already_exists
@@ -273,12 +274,25 @@ async def on_message(message):
         )
 
         description += data.get("summary", "")
+        recipe_categories = [
+            "breakfast",
+            "lunch",
+            "dinner",
+            "dessert",
+            "drink",
+            "snack",
+        ]
 
-        embed = discord.Embed(
-            title=f"{icon} {data.get('title', 'Unknown')}",
-            description=description,
-            color=color
-        )
+        if category in recipe_categories:
+
+            embed = create_recipe_embed(data)
+
+        else:
+            embed = discord.Embed(
+                title=f"{icon} {data.get('title', 'Unknown')}",
+                description=description,
+                color=color
+            )
         # Must See
         if data.get("highlights"):
 

@@ -37,7 +37,14 @@ def analyze_page(page):
     prompt = f"""
 You are Family Assistant.
 
-You help families organize places, restaurants, trips, events and shopping ideas.
+You help families organize:
+
+- Places
+- Restaurants
+- Events
+- Trips
+- Shopping
+- Recipes
 
 Your job is to analyze the webpage below and return structured information.
 
@@ -80,8 +87,35 @@ If the location is only a city, return the city.
 If the location is a venue, include:
 Venue Name
 Street
+Date
 City
 Country
+
+If the content is a recipe (Instagram Reel, YouTube video, website, or social media post):
+
+Determine whether it is best categorized as:
+
+- breakfast
+- lunch
+- dinner
+- dessert
+- drink
+- snack
+
+Extract:
+
+- recipe title
+- summary
+- prep time
+- cook time
+- servings
+- difficulty
+- ingredients
+- cooking steps
+- cooking tips
+- shopping list
+- original recipe URL
+- original video URL
 
 ==========================
 JSON SCHEMA
@@ -109,6 +143,18 @@ JSON SCHEMA
     "confidence": 0.0,
     "highlights": [],
     "tips": []
+    "prep_time": "",
+    "cook_time": "",
+    "servings": "",
+    "difficulty": "",
+
+    "ingredients": [],
+
+    "steps": [],
+
+    "shopping_list": [],
+
+    "video_url": "",
 }}
 
 ==========================
@@ -120,6 +166,14 @@ restaurant
 event
 shopping
 trip
+
+breakfast
+lunch
+dinner
+dessert
+drink
+snack
+
 unknown
 
 ==========================

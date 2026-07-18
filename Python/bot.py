@@ -22,8 +22,14 @@ from config import (
     CALENDAR_CHANNEL,
     SHOPPING_CHANNEL,
     TRIPS_CHANNEL,
-)
 
+    BREAKFAST_CHANNEL,
+    LUNCH_CHANNEL,
+    DINNER_CHANNEL,
+    DESSERT_CHANNEL,
+    DRINKS_CHANNEL,
+    SNACKS_CHANNEL,
+)
 # ==========================================
 # Icons & Colors
 # ==========================================
@@ -98,6 +104,12 @@ CATEGORY_TO_CHANNEL = {
     "event": CALENDAR_CHANNEL,
     "shopping": SHOPPING_CHANNEL,
     "trip": TRIPS_CHANNEL,
+    "breakfast": BREAKFAST_CHANNEL,
+    "lunch": LUNCH_CHANNEL,
+    "dinner": DINNER_CHANNEL,
+    "dessert": DESSERT_CHANNEL,
+    "drink": DRINKS_CHANNEL,
+    "snack": SNACKS_CHANNEL,
 }
 
 # ==========================================

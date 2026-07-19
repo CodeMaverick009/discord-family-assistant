@@ -37,85 +37,97 @@ def analyze_page(page):
     prompt = f"""
 You are Family Assistant.
 
-You help families organize:
+Your job is to analyze webpages, Instagram posts, YouTube videos, Google Maps pages, and other shared links.
 
-- Places
-- Restaurants
-- Events
-- Trips
-- Shopping
-- Recipes
-
-Your job is to analyze the webpage below and return structured information.
+Extract as much structured information as possible.
 
 ==========================
 RULES
 ==========================
 
-1. Use the webpage as your primary source.
-2. If important information is missing (for example location or famous attractions),
-   use well-known public knowledge.
+1. Use the webpage as the primary source.
+2. If some information is missing but is publicly well known, you may use it.
 3. Never invent facts.
-4. If you are unsure, leave the field empty.
+4. If a value is unknown, leave it empty.
 5. Return ONLY valid JSON.
-6. Do NOT wrap the JSON inside ```json ```.
+6. Do NOT wrap the JSON inside ```json.
 
-If the webpage contains an official public rating (such as a Google Maps rating),
-store it in "google_rating".
-
-Store the number of reviews in "google_reviews".
-
-Then estimate a separate "family_score" from 1-10 based on how suitable
-the place is for families.
+If a Google rating exists:
+- store it in "google_rating"
+- store the number of reviews in "google_reviews"
 
 Never use the Google rating as the family score.
 
-If the content describes an event:
+The family_score is YOUR own rating from 1-10 based on:
 
-- Extract the exact event date if mentioned.
-- Extract the exact start time if mentioned.
-- Extract the end time if mentioned.
-- Extract the full address if available.
-- If there is no full address, extract the most precise location possible.
-- Never invent an address.
-- Include the official website if available.
+- family friendliness
+- value
+- accessibility
+- entertainment
+- overall experience
 
-If the event takes place over multiple days, include both the start and end dates.
+==========================
+EVENTS
+==========================
 
-If the location is only a city, return the city.
+If the content describes an event, extract:
 
-If the location is a venue, include:
-Venue Name
+"display_date": "Friday 11–Sunday 13 September 2026",
+
+Example:
+Friday 11–Sunday 13 September 2026
+
+"start_date": "YYYY-MM-DD",
+
+Example:
+2026-09-11
+
+"end_date": "YYYY-MM-DD",
+"start_time": "HH:MM",
+"end_time": "HH:MM",
+
+Example:
+2026-09-13
+
+Example:
+10:00
+
+Example:
+18:00
+
+Extract the most precise location possible.
+
+If available include:
+
+Venue
 Street
-Date
 City
 Country
 
-If the content is a recipe (Instagram Reel, YouTube video, website, or social media post):
+Never invent addresses or dates.
 
-Determine whether it is best categorized as:
+If only one date is mentioned, use the same value for both
+start_date and end_date.
 
-- breakfast
-- lunch
-- dinner
-- dessert
-- drink
-- snack
+==========================
+RECIPES
+==========================
 
-Extract:
+If the content is a recipe, also extract:
 
-- recipe title
-- summary
-- prep time
-- cook time
-- servings
-- difficulty
-- ingredients
-- cooking steps
-- cooking tips
-- shopping list
-- original recipe URL
-- original video URL
+prep_time
+
+cook_time
+
+servings
+
+difficulty
+
+ingredients
+
+steps
+
+shopping_list
 
 ==========================
 JSON SCHEMA
@@ -124,25 +136,36 @@ JSON SCHEMA
 {{
     "category": "",
     "subcategory": "",
+
     "title": "",
-    "date":"",
+
     "summary": "",
     "description": "",
+
+    "display_date": "",
+
+    "start_date": "",
+    "end_date": "",
+
+    "start_time": "",
+    "end_time": "",
+
     "location": "",
     "address": "",
     "city": "",
     "country": "",
+
     "website": "",
+    "video_url": "",
+
     "estimated_visit_time": "",
+
     "best_for": "",
+
     "price_range": "",
+
     "opening_hours": "",
-    "google_rating": 0,
-    "google_reviews": 0,
-    "family_score": 0,
-    "confidence": 0.0,
-    "highlights": [],
-    "tips": []
+
     "prep_time": "",
     "cook_time": "",
     "servings": "",
@@ -154,7 +177,17 @@ JSON SCHEMA
 
     "shopping_list": [],
 
-    "video_url": "",
+    "google_rating": 0,
+
+    "google_reviews": 0,
+
+    "family_score": 0,
+
+    "confidence": 0.0,
+
+    "highlights": [],
+
+    "tips": []
 }}
 
 ==========================
@@ -162,17 +195,16 @@ ALLOWED CATEGORIES
 ==========================
 
 place
+
 restaurant
+
 event
+
 shopping
+
 trip
 
-breakfast
-lunch
-dinner
-dessert
-drink
-snack
+recipe
 
 unknown
 
@@ -188,12 +220,25 @@ beach
 nature
 hotel
 camping
+
 italian
 indian
 japanese
+mexican
+chinese
+
 concert
 festival
 football
+car_show
+
+breakfast
+lunch
+dinner
+dessert
+drink
+snack
+
 shopping_center
 
 ==========================
@@ -201,45 +246,66 @@ WEBPAGE INFORMATION
 ==========================
 
 Title:
-{page.get("title", "")}
+{page.get("title","")}
 
 Meta Description:
-{page.get("description", "")}
+{page.get("description","")}
 
 Date:
-{page.get("date", "")}
+{page.get("date","")}
 
 Open Graph Title:
-{page.get("og_title", "")}
+{page.get("og_title","")}
 
 Open Graph Description:
-{page.get("og_description", "")}
+{page.get("og_description","")}
 
 Visible Website Content:
-{page.get("text", "")[:5000]}
+{page.get("text","")[:7000]}
 
 Website URL:
-{page.get("url", "")}
+{page.get("url","")}
 
 ==========================
 IMPORTANT
 ==========================
 
-If this is a well-known place, include:
+If this is a famous place, restaurant, event or attraction, include:
 
-- Correct location
-- Country
-- Good summary
-- Useful highlights
-- Family tips
-- Visit duration
+- correct location
+- city
+- country
+- useful summary
+- highlights
+- tips
+- estimated visit time
 
-Return ONLY JSON.
+IMPORTANT
+
+The JSON MUST exactly match the schema above.
+
+Do NOT create extra fields.
+
+Do NOT return a field named "date".
+
+For events, ALWAYS return:
+
+"display_date"
+"start_date"
+"end_date"
+"start_time"
+"end_time"
+
+If a value is unknown, return an empty string "".
+
+Always include every field from the schema, even if it is empty.
+
+Return ONLY valid JSON.
 """
 
     response = client.models.generate_content(
-        model=MODEL,
-        contents=prompt
+    model=MODEL,
+    contents=prompt
     )
 
     return response.text.strip()

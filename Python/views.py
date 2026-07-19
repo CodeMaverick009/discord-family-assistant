@@ -70,14 +70,6 @@ class PlaceView(discord.ui.View):
 
             details = ""
 
-            calendar_url = (
-            "https://calendar.google.com/calendar/render"
-            "?action=TEMPLATE"
-            f"&text={title}"
-            f"&dates={dates}"
-            f"&location={location}"
-        )
-
             start_date = data.get("start_date", "")
             end_date = data.get("end_date", "")
             start_time = data.get("start_time", "")
@@ -98,22 +90,15 @@ class PlaceView(discord.ui.View):
                             "%Y-%m-%d"
                         )
 
-                    if end_date:
-
-                        if end_time:
-                            end = datetime.strptime(
-                                f"{end_date} {end_time}",
-                                "%Y-%m-%d %H:%M"
-                            )
-                        else:
-                            end = datetime.strptime(
-                                end_date,
-                                "%Y-%m-%d"
-                            )
-
+                    if end_time:
+                        end = datetime.strptime(
+                            f"{end_date} {end_time}",
+                            "%Y-%m-%d %H:%M"
+                        )
                     else:
                         end = start
 
+                    # Create dates HERE
                     dates = (
                         start.strftime("%Y%m%dT%H%M%S")
                         + "/"
@@ -126,7 +111,6 @@ class PlaceView(discord.ui.View):
                         f"&text={title}"
                         f"&dates={dates}"
                         f"&location={location}"
-                        f"&details={details}"
                     )
 
                     self.add_item(

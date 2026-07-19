@@ -70,21 +70,46 @@ class PlaceView(discord.ui.View):
 
             details = quote(data.get("summary", ""))
 
-            date = data.get("event_date", "")
+            start_date = data.get("start_date", "")
+            end_date = data.get("end_date", "")
+            start_time = data.get("start_time", "")
+            end_time = data.get("end_time", "")
 
-            if date:
+            if start_date:
 
                 try:
 
-                    start = datetime.strptime(date, "%Y-%m-%d")
+                    if start_time:
+                        start = datetime.strptime(
+                            f"{start_date} {start_time}",
+                            "%Y-%m-%d %H:%M"
+                        )
+                    else:
+                        start = datetime.strptime(
+                            start_date,
+                            "%Y-%m-%d"
+                        )
 
-                    # Default duration: 2 hours
-                    end = start.replace(hour=18)
+                    if end_date:
+
+                        if end_time:
+                            end = datetime.strptime(
+                                f"{end_date} {end_time}",
+                                "%Y-%m-%d %H:%M"
+                            )
+                        else:
+                            end = datetime.strptime(
+                                end_date,
+                                "%Y-%m-%d"
+                            )
+
+                    else:
+                        end = start
 
                     dates = (
-                        start.strftime("%Y%m%d")
+                        start.strftime("%Y%m%dT%H%M%S")
                         + "/"
-                        + end.strftime("%Y%m%d")
+                        + end.strftime("%Y%m%dT%H%M%S")
                     )
 
                     calendar_url = (
@@ -104,5 +129,5 @@ class PlaceView(discord.ui.View):
                         )
                     )
 
-                except Exception:
-                    pass
+                except Exception as e:
+                    print("Calendar Error:", e)

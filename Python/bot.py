@@ -206,6 +206,14 @@ async def on_message(message):
         # Convert JSON string to Python dictionary
         data = json.loads(response)
 
+        # ==========================
+        # DEBUG: Show AI JSON
+        # ==========================
+        print("\n==========================")
+        print("Full JSON:")
+        print(json.dumps(data, indent=4))
+        print("==========================\n")
+
         existing = already_exists(data)
 
         if existing:

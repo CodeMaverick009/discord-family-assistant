@@ -2,11 +2,14 @@ import discord
 from urllib.parse import quote
 from urllib.parse import quote
 from datetime import datetime
+from apple_calendar import create_ics
 
 class PlaceView(discord.ui.View):
 
     def __init__(self, data):
         super().__init__(timeout=None)
+
+        self.data = data
 
         # -------------------------
         # Google Maps

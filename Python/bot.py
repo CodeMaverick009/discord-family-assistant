@@ -7,6 +7,7 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
+from apple_calendar import create_ics
 from recipe_embed import create_recipe_embed
 from maps import extract_place_name
 from maps import scrape_google_maps
@@ -389,10 +390,42 @@ async def on_message(message):
 
         print("About to send embed...")
 
-        await destination_channel.send(
-        embed=embed,
-        view=PlaceView(data)
-        )
+        calendar_file = None
+
+        if data.get("category") == "event":
+
+            ics = create_ics(data)
+
+            safe_name = re.sub(
+                r'[^A-Za-z0-9_-]',
+                "_",
+                data.get("title", "event")
+            )
+
+            filename = f"{safe_name}.ics"
+
+            with open(filename, "w", encoding="utf-8") as f:
+                f.write(ics)
+
+            calendar_file = discord.File(
+                filename,
+                filename=f"{safe_name}.ics"
+            )
+
+        if calendar_file:
+
+            await destination_channel.send(
+                embed=embed,
+                view=PlaceView(data),
+                file=calendar_file
+            )
+
+        else:
+
+            await destination_channel.send(
+                embed=embed,
+                view=PlaceView(data)
+            )
 
         print("Embed sent!")
 

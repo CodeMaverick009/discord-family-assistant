@@ -272,8 +272,11 @@ async def on_message(message):
         description += (
             f"❤️ **Family Score:** {data.get('family_score', 0)}/10\n\n"
         )
+        if data.get("display_date"):
+            description += f"📅 **Date:** {data.get('display_date')}\n\n"
 
-        description += data.get("summary", "")
+        subcategory = data.get("subcategory", "").lower()
+
         recipe_categories = [
             "breakfast",
             "lunch",
@@ -283,10 +286,8 @@ async def on_message(message):
             "snack",
         ]
 
-        if category in recipe_categories:
-
+        if subcategory in recipe_categories:
             embed = create_recipe_embed(data)
-
         else:
             embed = discord.Embed(
                 title=f"{icon} {data.get('title', 'Unknown')}",
@@ -357,12 +358,12 @@ async def on_message(message):
         )
         # Determine destination channel
         category = data.get("category", "unknown").lower()
+        subcategory = data.get("subcategory", "").lower()
 
-        print("Full JSON:")
-        print(data)
-        
+        route = subcategory if category == "recipe" else category
+
         destination_id = CATEGORY_TO_CHANNEL.get(
-            category,
+            route,
             IDEAS_CHANNEL
         )
 

@@ -68,7 +68,15 @@ class PlaceView(discord.ui.View):
                 or ""
             )
 
-            details = quote(data.get("summary", ""))
+            details = ""
+
+            calendar_url = (
+            "https://calendar.google.com/calendar/render"
+            "?action=TEMPLATE"
+            f"&text={title}"
+            f"&dates={dates}"
+            f"&location={location}"
+        )
 
             start_date = data.get("start_date", "")
             end_date = data.get("end_date", "")

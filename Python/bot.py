@@ -402,13 +402,23 @@ async def on_message(message):
                 data.get("title", "event")
             )
 
-            filename = f"{safe_name}.ics"
+            # Project root directory
+            project_root = Path(__file__).resolve().parent.parent
+
+            # Dedicated calendar directory
+            calendar_dir = project_root / "calendar_files"
+
+            # Create directory automatically if it doesn't exist
+            calendar_dir.mkdir(parents=True, exist_ok=True)
+
+            # Full path to ICS file
+            filename = calendar_dir / f"{safe_name}.ics"
 
             with open(filename, "w", encoding="utf-8") as f:
                 f.write(ics)
 
             calendar_file = discord.File(
-                filename,
+                str(filename),
                 filename=f"{safe_name}.ics"
             )
 
